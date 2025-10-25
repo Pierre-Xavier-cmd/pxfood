@@ -8,7 +8,6 @@
     "swagger": "node ./swagger.js",
     "dev": "nodemon ./web.js",
     "start": "node ./web.js",
-    "seed": "node scripts/fake-datas.js"
   },
   "keywords": [],
   "author": "",
