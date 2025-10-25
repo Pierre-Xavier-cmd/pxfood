@@ -46,16 +46,16 @@ describe("Test Restaurants API", () => {
         })
     })
 
-    it("should return a user by id", (done) => {
+    it("should return a restaurant by id", (done) => {
         done()
     })
-    it("should update a user by id", (done) => {
+    it("should update a restaurant by id", (done) => {
         done()
     })
-    it("should delete a user by id", (done) => {
+    it("should delete a restaurant by id", (done) => {
         done()
     })
-    it("should create a user", (done) => {
+    it("should create a restaurant", (done) => {
         done()
     })
 })
