@@ -7,7 +7,7 @@ const router = express.Router()
 // Register
 router.post('/', async (req, res) => {
 
-    const { id, name, address, phone, opening_hours } = req.body
+    const { restaurant_id, name, address, phone, opening_hours } = req.body
     
 
     try {
@@ -63,6 +63,13 @@ router.delete('/:id', async (req, res) => {
     const restaurant = await Restaurant.deleteOne({_id: restaurantId})
     console.log(restaurant)
     res.status(200).json({message: `Suppression finie pour restaurant id ${restaurantId}`})
+})
+
+
+// list of restaurant
+router.get('/', async (req, res) => {
+    const restaurant = await User.find()
+    res.status(200).json(restaurant)
 })
 
 export default router

@@ -94,6 +94,21 @@ describe("Test Users API", () => {
 
 
     it("should delete a user by id", (done) => {
-        done()
-    })
-})
+        const userId = "68fd06792c7a005435236b52"
+        const request = supertest(app)
+        request.delete(`/api/users/${userId}`)
+        .send(userId)
+        .expect(200)
+        .end((err, res) => {
+            if (err) {
+                console.log(err)
+                done(err)
+            }
+
+            done()
+        })
+        
+    })    
+
+
+

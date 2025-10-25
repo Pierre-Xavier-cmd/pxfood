@@ -25,15 +25,15 @@ describe("Test Menu API", () => {
             })
 
             res.on("end", () => {
-                const menu = JSON.parse(data)
+                const menus = JSON.parse(data)
 
                 // Assertions
                 assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
-                assert(Array.isArray(menu), "Expected response body to be an array")
-                assert(menu.length > 0, "Expected at least one product in the response")
+                assert(Array.isArray(menus), "Expected response body to be an array")
+                assert(menus.length > 0, "Expected at least one product in the response")
 
                 // Additional verifications
-                products.forEach((menu) => {
+                menus.forEach((menu) => {
                     assert(menu._id, "Expected menu to have an 'id' property")
                     assert(menu.restaurant_id, "Expected menu to have a 'restaurant_id' property")
                     assert(menu.name, "Expected menu to have a 'name' property")
@@ -48,15 +48,89 @@ describe("Test Menu API", () => {
         })
     })
 
-    it("should return a user by id", (done) => {
+
+
+    it("should return a menu by id", (done) => {
+        const menuId = "68fd06792c7a005435236b52"
+        http.get(`http://localhost:8080/api/restaurant/${restaurantId}`, (res) => {
+            let data = ""
+
+            res.on("data", (chunk) => {
+                data += chunk
+            })
+
+            res.on("end", () => {
+                const restaurant = JSON.parse(data)
+                // Assertions
+                assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
+                // Additional verifications
+                assert(menu._id, "Expected menu to have an 'id' property")
+                assert(menu.restaurant_id, "Expected menu to have an 'restaurant_id' property")
+                assert(menu.name, "Expected menu to have an 'name' property")
+                assert(menu.description, "Expected menu to have a 'description' property")
+                assert(menu.price, "Expected menu to have a 'price' property")
+                assert(menu.category, "Expected menu to have a 'category' property")
+
+                done()
+            })
+        })
+
         done()
     })
+
+
+
+
+
+
     it("should update a user by id", (done) => {
+        const menuId = "68fd06792c7a005435236b52"
+        const randomId = Math.random().toString(36).substring(2, 15)
+        const menuUpdate = {
+            name: randomId
+        }
+        const request = supertest(app)
+        request.put(`/api/users/${menuId}`)
+        .send(menuUpdate)
+        .expect(200)
+        .end((err, res) => {
+            if (err) {
+                console.log(err)
+                done(err)
+            }
+            assert.strictEqual(res.body.name, randomId, "Expected user to have the updated name")
+            done()
+        })        
         done()
     })
-    it("should delete a user by id", (done) => {
+
+
+
+    it("should delete a restaurant by id", (done) => {
+        const menuId = "68fd06792c7a005435236b52"
+        const request = supertest(app)
+        request.delete(`/api/menu/${menuId}`)
+        .send(menutId)
+        .expect(200)
+        .end((err, res) => {
+            if (err) {
+                console.log(err)
+                done(err)
+            }
+
+            done()
+        })
         done()
     })
+ 
+
+
+
+
+
+
+
+
     it("should create a user", (done) => {
         done()
     })
