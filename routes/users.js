@@ -8,7 +8,6 @@ const router = express.Router()
 router.get('/:id', async (req, res) => {
 
     const userId = req.params.id
-    console.log('tentative de lecture pour user', userId)
     const user = await User.findOne({ _id: userId})
     res.status(200).json(user)
 
@@ -18,16 +17,10 @@ router.get('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     const userId = req.params.id
-//    const { username, email, password } = req.body
-    const user = { username, email, password } = req.body
-    newUser = {}
-
+    const user = req.body
     await User.updateOne({_id: userId}, user)    
-    const updatedUser = User.findById(userId)
-    console.log('tentative de modification pour user', userId)
- //   const user = await User.updateOne({_id: userId,})
-    console.log(user)
-    res.status(200).json({user: updatedUser})
+    const updatedUser = await User.findById(userId)
+    res.status(200).json(updatedUser)
     
 })
 
