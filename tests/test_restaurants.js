@@ -4,7 +4,7 @@ import http from "http"
 import assert from "assert"
 
 // A faire: rajouter les tests pour les restaurants et remplacer users.. 
-describe("Test Users API", () => {
+describe("Test Restaurants API", () => {
     let server
 
     before((done) => {
@@ -16,8 +16,8 @@ describe("Test Users API", () => {
         server.close(done)
     })
 
-    it("should return a list of users", (done) => {
-        http.get("http://localhost:8080/api/users/", (res) => {
+    it("should return a list of restaurant", (done) => {
+        http.get("http://localhost:8080/api/restaurant/", (res) => {
             let data = ""
 
             res.on("data", (chunk) => {
@@ -25,18 +25,20 @@ describe("Test Users API", () => {
             })
 
             res.on("end", () => {
-                const products = JSON.parse(data)
+                const restaurant = JSON.parse(data)
 
                 // Assertions
                 assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
-                assert(Array.isArray(products), "Expected response body to be an array")
-                assert(products.length > 0, "Expected at least one product in the response")
+                assert(Array.isArray(restaurant), "Expected response body to be an array")
+                assert(restaurant.length > 0, "Expected at least one restaurant in the response")
 
                 // Additional verifications
-                products.forEach((product) => {
-                    assert(product._id, "Expected product to have an 'id' property")
-                    assert(product.title, "Expected product to have a 'title' property")
-                    assert(product.price, "Expected product to have a 'price' property")
+                products.forEach((restaurant) => {
+                    assert(restaurant._id, "Expected restaurant to have an 'id' property")
+                    assert(restaurant.name, "Expected restaurant to have a 'name' property")
+                    assert(restaurant.address, "Expected restaurant to have a 'address' property")
+                    assert(restaurant.phone, "Excepted restaurant to have a 'phone' property")
+                    assert(restaurant.opening_hours, "Excepted restaurant to have a 'opening_hours' property")
                 })
 
                 done()
