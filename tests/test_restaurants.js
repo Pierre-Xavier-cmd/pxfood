@@ -44,10 +44,18 @@ describe("Test Users API", () => {
         })
     })
 
-    it("should return a user by id", (done) => {})
-    it("should update a user by id", (done) => {})
-    it("should delete a user by id", (done) => {})
-    it("should create a user", (done) => {})
+    it("should return a user by id", (done) => {
+        done()
+    })
+    it("should update a user by id", (done) => {
+        done()
+    })
+    it("should delete a user by id", (done) => {
+        done()
+    })
+    it("should create a user", (done) => {
+        done()
+    })
 })
 
 
