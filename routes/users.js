@@ -42,4 +42,10 @@ router.delete('/:id', async (req, res) => {
     res.status(200).json({message: `Suppression finie pour user avec id ${userId}`})
 })
 
+// list of users
+router.get('/', async (req, res) => {
+    const users = await User.find()
+    res.status(200).json(users)
+})
+
 export default router
