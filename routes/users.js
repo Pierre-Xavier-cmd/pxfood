@@ -11,8 +11,10 @@ router.get('/:id', async (req, res) => {
     console.log('tentative de lecture pour user', userId)
     const user = await User.findOne({ _id: userId})
     console.log(user)
-    // TODO mettre a jour le status et renvoyer utilisateur 
-    res.status(500).json({message: `en cours de lecture avec user id ${userId}`})
+    if (!user) {
+        return res.status(404).json({ message: `Utilisateur introuvable pour l'id ${userId}` })
+    }
+    res.status(200).json({ user })
 
 })
 
