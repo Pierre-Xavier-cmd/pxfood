@@ -1,7 +1,9 @@
+
 import app from "../web.js"
 import http from "http"
 import assert from "assert"
 
+// A faire: rajouter les tests pour les Menus et remplacer users.. 
 describe("Test Users API", () => {
     let server
 
