@@ -46,34 +46,30 @@ describe("Test Users API", () => {
         })
     })
 
-    // it("should return a user by id", (done) => {
-    //     http.get(`http://localhost:8080/api/users/`, (res) => {
-    //         let data = ""
+    it("should return a user by id", (done) => {
+        const userId = "68fd06792c7a005435236b52"
+        http.get(`http://localhost:8080/api/users/${userId}`, (res) => {
+            let data = ""
 
-    //         res.on("data", (chunk) => {
-    //             data += chunk
-    //         })
+            res.on("data", (chunk) => {
+                data += chunk
+            })
 
-    //         res.on("end", () => {
-    //             const users = JSON.parse(data)
-    //             // Assertions
-    //             assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
-    //             assert(Array.isArray(users), "Expected response body to be an array")
-    //             assert(users.length === 1, "Expected only one user in the response")
+            res.on("end", () => {
+                const user = JSON.parse(data)
+                // Assertions
+                assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
+                // Additional verifications
+                assert(user._id, "Expected user to have an 'id' property")
+                assert(user.email, "Expected user to have an 'email' property")
+                assert(user.username, "Expected user to have an 'username' property")
+                assert(user.password, "Expected user to have a 'password' property")
+                assert(user.role, "Expected user to have a 'role' property")
 
-    //             // Additional verifications
-    //             users.forEach((user) => {
-    //                 assert(users._id, "Expected user to have an 'id' property")
-    //                 assert(users.email, "Expected user to have an 'email' property")
-    //                 assert(user.username, "Expected user to have an 'username' property")
-    //                 assert(user.password, "Expected user to have a 'password' property")
-    //                 assert(user.role, "Expected user to have a 'role' property")
-    //             })
-
-    //             done()
-    //         })
-    //     })
-    // })
+                done()
+            })
+        })
+    })
 
     // it("should update a user by id", (done) => {
     //     http.request("http://localhost:8080/api/users/", (res) => {
