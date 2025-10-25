@@ -87,7 +87,6 @@ describe("Test Users API", () => {
                 console.log(err)
                 done(err)
             }
-            console.log(res.body)
             assert.strictEqual(res.body.username, randomId, "Expected user to have the updated username")
             done()
         })
