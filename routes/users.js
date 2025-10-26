@@ -27,9 +27,7 @@ router.put('/:id', async (req, res) => {
 // creer supprimer user
 router.delete('/:id', async (req, res) => {
     const userId = req.params.id
-    console.log('tentative de suppression pour user', userId)
     const user = await User.deleteOne({_id: userId})
-    console.log(user)
     res.status(200).json({message: `Suppression finie pour user avec id ${userId}`})
 })
 

@@ -2,15 +2,27 @@ import app from "../web.js"
 import http from "http"
 import supertest from "supertest"
 import assert from "assert"
+import User from "../models/Users.js"
 
 describe("Test Users API", () => {
     let server
-
+    let createdUserId;
     before((done) => {
         server = http.createServer(app)
-        server.listen(done)
+        server.listen(() => {
+            // Créer l'utilisateur directement avec mongoose
+            const randomId = Math.random().toString(36).substring(2, 15)
+            User.create({
+                username: `testuser_${randomId}`,
+                email: `test_${randomId}@example.com`,
+                password: "testpassword123",
+                role: "user"
+            }).then((user) => {
+                createdUserId = user._id
+                done()
+            }).catch(done)
+        })
     })
-
     after((done) => {
         server.close(done)
     })
@@ -48,8 +60,7 @@ describe("Test Users API", () => {
     })
 
     it("should return a user by id", (done) => {
-        const userId = "68fd06792c7a005435236b52"
-        http.get(`http://localhost:8080/api/users/${userId}`, (res) => {
+        http.get(`http://localhost:8080/api/users/${createdUserId}`, (res) => {
             let data = ""
 
             res.on("data", (chunk) => {
@@ -73,13 +84,12 @@ describe("Test Users API", () => {
     })
 
     it("should update a user by id", (done) => {
-        const userId = "68fd06792c7a005435236b52"
         const randomId = Math.random().toString(36).substring(2, 15)
         const userUpdate = {
             username: randomId
         }
         const request = supertest(app)
-        request.put(`/api/users/${userId}`)
+        request.put(`/api/users/${createdUserId}`)
         .send(userUpdate)
         .expect(200)
         .end((err, res) => {
@@ -94,10 +104,9 @@ describe("Test Users API", () => {
 
 
     it("should delete a user by id", (done) => {
-        const userId = "68fd06792c7a005435236b52"
         const request = supertest(app)
-        request.delete(`/api/users/${userId}`)
-        .send(userId)
+        request.delete(`/api/users/${createdUserId}`)
+        .send(createdUserId)
         .expect(200)
         .end((err, res) => {
             if (err) {
