@@ -6,7 +6,7 @@
   "scripts": {
     "test:restaurants": "mocha tests/test_restaurants.js --exit",
     "test:users": "mocha tests/test_users.js --exit",
-    "test:menu": "mocha tests/test_menu.js --exit",
+    "test:menu": "mocha tests/test_restaurants_menu.js --exit",
     "test:all": "mocha tests --exit",
     "swagger": "node ./swagger.js",
     "dev": "nodemon ./web.js",
