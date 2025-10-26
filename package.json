@@ -4,7 +4,7 @@
   "description": "",
   "main": "web.js",
   "scripts": {
-    "test": "mocha tests/test_users.js --exit --full-trace --reporter spec",
+    "test": "mocha tests/test_restaurants.js --bail",
     "swagger": "node ./swagger.js",
     "dev": "nodemon ./web.js",
     "start": "node ./web.js"
