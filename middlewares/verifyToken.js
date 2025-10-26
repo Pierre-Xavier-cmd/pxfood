@@ -25,7 +25,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
             let authorized = false;
 
             // Verify if the user is authorized to access resource (product, user, etc.)
-            if (req.user.isAdmin) {
+            if (req.user.role === "admin") {
                 authorized = true
             } else if (req.params.id) {
                 // L'utilisateur peut accéder à ses propres ressources
@@ -47,7 +47,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
 
 const verifyTokenAndAdmin = (req, res, next) => {
     verifyToken(req, res, () => {
-        if (req.user.isAdmin) {
+        if (req.user.role === "admin") {
             next()
         } else {
             res.status(403).json("You are not allowed to do that!")
