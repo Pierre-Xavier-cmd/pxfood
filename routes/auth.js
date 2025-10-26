@@ -8,32 +8,18 @@ const router = express.Router()
 
 // Register
 router.post('/register', async (req, res) => {
-
-    const { error } = userInputSchema.validate(req.body)
-    if (error) {
-        return res.status(400).json({ error: error.message })
-    }
-
-    try {
-        const newUser = new User({
-            username: req.body.username,
-            email: req.body.email,
-            password: req.body.password,
-        })
-
-
+        const validatedData = await userInputSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
+        console.log(validatedData)
+        const newUser = new User(validatedData)
         const savedUser = await newUser.save()
         res.status(201).json({...savedUser, accessToken: jwt.sign(
             {
                 id: savedUser._id,
-                role: "user",
+                role: validatedData.role,
             },
             process.env.JWT_SEC,
             { expiresIn: '3d' }
         )})
-    } catch (err) {
-        res.status(500).json({ response: 'Internal server error: ' + err.message })
-    }
 })
 
 // Login
