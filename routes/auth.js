@@ -22,7 +22,14 @@ router.post('/register', async (req, res) => {
         })
 
         const savedUser = await newUser.save()
-        res.status(201).json(savedUser)
+        res.status(201).json({...savedUser, accessToken: jwt.sign(
+            {
+                id: savedUser._id,
+                isAdmin: false,
+            },
+            process.env.JWT_SEC,
+            { expiresIn: '3d' }
+        )})
     } catch (err) {
         res.status(500).json({ response: 'Internal server error: ' + err.message })
     }
@@ -38,8 +45,6 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ username: username })
 
         console.log(user)
-
-        
 
         if (!user) {
             return res.status(401).json('Wrong User Name')

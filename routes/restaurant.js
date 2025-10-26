@@ -6,10 +6,7 @@ const router = express.Router()
 
 // Register
 router.post('/', async (req, res) => {
-
     const { restaurant_id, name, address, phone, opening_hours } = req.body
-    
-
     try {
 // TODO on ne met pas en id pour
 //  register un restaurant on laisse mongoDB gerer les IDs
