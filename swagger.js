@@ -6,7 +6,15 @@ const doc = {
     title: 'My API',
     description: 'Description'
   },
-  host: 'localhost:3000'
+  host: 'localhost:8080',
+
+  auth: {
+    jwt: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header'
+    }
+  }
 };
 
 const outputFile = './swagger.json';
