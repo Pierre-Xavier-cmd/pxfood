@@ -8,6 +8,7 @@ import swaggerDocument from './swagger.json' with { type: 'json' }
 import userRoutes from './routes/users.js'
 import authRoutes from './routes/auth.js'
 import restaurantRoutes from './routes/restaurant.js'
+import menuRoutes from './routes/menu.js'
 const app = express()
 const PORT = 8080
 
@@ -33,6 +34,7 @@ app.use(cors())
 app.use('/api/restaurant', restaurantRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/menu', menuRoutes)
 app.use(express.static('public'))
 
 app.use((req, res) => {
