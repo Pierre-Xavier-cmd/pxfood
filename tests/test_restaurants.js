@@ -3,75 +3,116 @@ import app from "../web.js"
 import http from "http"
 import supertest from "supertest"
 import assert from "assert"
-
+import Restaurant from "../models/Restaurant.js"
+import User from "../models/Users.js"
 // A faire: rajouter les tests pour les restaurants et remplacer users.. 
+
+
+
+
 describe("Test Restaurants API", () => {
     let server
+    let userToken
+    let adminToken
+    let restaurantId
+    let userCredentials = {
+        username: "nox",
+        email: "nox@noxen.net",
+        password: "aZerTy123",
+      }
+    
+      let adminCredentials = {
+        username: "thierry",
+        email: "thierry.prost@supinfo.com",
+        password: "aZerTy123",
+      }
 
     before((done) => {
         server = http.createServer(app)
-        server.listen(done)
+        server.listen()
+        
+        const request = supertest(app)
+        
+        // Séquentiel : delete → create users → login
+        Restaurant.deleteMany({})
+            .then(() => User.deleteMany({}))
+            .then(() => User.create({
+                username: adminCredentials.username,
+                email: adminCredentials.email,
+                password: adminCredentials.password,
+                role: "admin",
+            }))
+            .then(() => User.create({
+                username: userCredentials.username,
+                email: userCredentials.email,
+                password: userCredentials.password,
+                role: "user",
+            }))
+            .then(() => {
+                request.post("/api/auth/login").send(userCredentials).expect(200).end((err, res) => {
+                    if (err) return done(err)
+                    userToken = res.body.accessToken
+                    
+                    request.post("/api/auth/login").send(adminCredentials).expect(200).end((err, res) => {
+                        if (err) return done(err)
+                        adminToken = res.body.accessToken
+                        done()
+                    })
+                })
+            })
+            .catch((err) => done(err))
     })
 
     after((done) => {
         server.close(done)
     })
 
-    it("should return a list of restaurant", (done) => {
-        http.get("http://localhost:8080/api/restaurant/", (res) => {
-            let data = ""
-
-            res.on("data", (chunk) => {
-                data += chunk
-            })
-
-            res.on("end", () => {
-                const restaurants = JSON.parse(data)
-
-                // Assertions
-                assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
-                assert(Array.isArray(restaurants), "Expected response body to be an array")
-                assert(restaurants.length > 0, "Expected at least one restaurant in the response")
-
-                // Additional verifications
-                restaurants.forEach((restaurant) => {
-                    assert(restaurant._id, "Expected restaurant to have an 'id' property")
-                    assert(restaurant.name, "Expected restaurant to have a 'name' property")
-                    assert(restaurant.address, "Expected restaurant to have a 'address' property")
-                    assert(restaurant.phone, "Excepted restaurant to have a 'phone' property")
-                    assert(restaurant.opening_hours, "Excepted restaurant to have a 'opening_hours' property")
-                })
-
+    it("should create a restaurant", (done) => {
+        const restaurant = {
+            name: "Test Restaurant",
+            address: "123 rue de la Paix, Paris",
+            phone: "+33 1 42 36 78 90",
+            opening_hours: "09:00:00",
+        }
+        const request = supertest(app)
+        request.post("/api/restaurant").set("authorization", `Bearer ${adminToken}`).send(restaurant).expect(201).end(
+            
+            (err, res) => {
+                if (err) {
+                    console.log(err)
+                    done(err)
+                }
+                restaurantId = res.body._id
                 done()
             })
+    })
+    it("should return a list of restaurant", (done) => {
+        const request = supertest(app)
+        request.get("/api/restaurant/").set("authorization", `Bearer ${userToken}`).expect(200).end((err, res) => {
+            if (err) {
+                console.log(err)
+                done(err)
+            }
+            const restaurants = res.body
+            restaurants.forEach((restaurant) => {
+                assert(restaurant._id, "Expected restaurant to have an 'id' property")
+                assert(restaurant.name, "Expected restaurant to have a 'name' property")
+                assert(restaurant.address, "Expected restaurant to have an 'address' property")
+                assert(restaurant.phone, "Expected restaurant to have a 'phone' property")
+                assert(restaurant.opening_hours, "Expected restaurant to have a 'opening_hours' property")
+            })
+            done()
         })
     })
 
     it("should return a restaurant by id", (done) => {
-        const restaurantId = "68fd06792c7a005435236b52"
-        http.get(`http://localhost:8080/api/restaurant/${restaurantId}`, (res) => {
-            let data = ""
-
-            res.on("data", (chunk) => {
-                data += chunk
-            })
-
-            res.on("end", () => {
-                const restaurant = JSON.parse(data)
-                // Assertions
-                assert.strictEqual(res.statusCode, 200, `Expected status 200, but received ${res.statusCode}`)
-                // Additional verifications
-                assert(restaurant._id, "Expected restaurant to have an 'id' property")
-                assert(restaurant.name, "Expected restaurant to have an 'name' property")
-                assert(restaurant.address, "Expected restaurant to have an 'address' property")
-                assert(restaurant.phone, "Expected restaurant to have a 'phone' property")
-                assert(restaurant.opening_hours, "Expected restaurant to have a 'opening_hours' property")
-
-                done()
-            })
+        const request = supertest(app)
+        request.get(`/api/restaurant/${restaurantId}`).set("authorization", `Bearer ${userToken}`).expect(200).end((err, res) => {
+            const restaurant = res.body
+            assert(restaurant._id, "Expected restaurant to have an 'id' property")
+            assert(restaurant.name, "Expected restaurant to have a 'name' property")
+            done()
         })
-
-        done()
     })
 
 
@@ -79,13 +120,13 @@ describe("Test Restaurants API", () => {
 
 
     it("should update a restaurant by id", (done) => {
-        const restaurantId = "68fd06792c7a005435236b52"
-        const randomId = Math.random().toString(36).substring(2, 15)
+        const newName = "updated restaurant"
         const restaurantUpdate = {
-            name: randomId
+            name: newName
         }
         const request = supertest(app)
-        request.put(`/api/users/${restaurantId}`)
+        request.put(`/api/restaurant/${restaurantId}`)
+        .set("authorization", `Bearer ${adminToken}`)
         .send(restaurantUpdate)
         .expect(200)
         .end((err, res) => {
@@ -93,41 +134,21 @@ describe("Test Restaurants API", () => {
                 console.log(err)
                 done(err)
             }
-            assert.strictEqual(res.body.name, randomId, "Expected user to have the updated name")
+            assert.strictEqual(res.body.name, newName, "Expected restaurant to have the updated name")
             done()
         })        
-        done()
-
-
     })
-
-
-
 
     it("should delete a restaurant by id", (done) => {
-        const userId = "68fd06792c7a005435236b52"
         const request = supertest(app)
         request.delete(`/api/restaurant/${restaurantId}`)
-        .send(restaurantId)
+        .set("authorization", `Bearer ${adminToken}`)
         .expect(200)
         .end((err, res) => {
-            if (err) {
-                console.log(err)
-                done(err)
-            }
-
             done()
         })  
-        done()      
     })
 
-
-
-
-
-    it("should create a restaurant", (done) => {
-        done()
-    })
 })
 
 
