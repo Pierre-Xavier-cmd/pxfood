@@ -4,7 +4,10 @@
   "description": "",
   "main": "web.js",
   "scripts": {
-    "test": "mocha tests/test_restaurants.js --bail",
+    "test:restaurants": "mocha tests/test_restaurants.js --bail",
+    "test:users": "mocha tests/test_users.js --bail",
+    "test:menu": "mocha tests/test_menu.js --bail",
+    "test:all": "mocha tests",
     "swagger": "node ./swagger.js",
     "dev": "nodemon ./web.js",
     "start": "node ./web.js"
