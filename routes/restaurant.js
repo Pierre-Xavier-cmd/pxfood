@@ -2,12 +2,24 @@ import express from 'express'
 import Restaurant from '../models/Restaurant.js'
 import { verifyToken, verifyTokenAndAdmin } from '../middlewares/verifyToken.js'
 import { restaurantInputSchema, restaurantUpdateYup } from '../validation/restaurant.yup.js'
+import { validate } from '../middleware/validate.js';
+
 const router = express.Router()
 
 // Register
-router.post('/', verifyTokenAndAdmin, async (req, res) => {
-    const validatedData = await restaurantInputSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
-    const newRestaurant = new Restaurant(validatedData)
+router.post('/', verifyTokenAndAdmin, validate(restaurantInputSchema), async (req, res) => {
+    const {
+        name,
+        address,
+        phone,
+        opening_hours
+    } = req.body
+    const newRestaurant = new Restaurant({
+        name,
+        address,
+        phone,
+        opening_hours
+    })
     const savedRestaurant = await newRestaurant.save()
     res.status(201).json(savedRestaurant)
 })
