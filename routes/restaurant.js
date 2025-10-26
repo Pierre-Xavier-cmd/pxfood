@@ -1,29 +1,17 @@
 import express from 'express'
 import Restaurant from '../models/Restaurant.js'
 import { verifyToken, verifyTokenAndAdmin } from '../middlewares/verifyToken.js'
-
+import { restaurantInputSchema, restaurantUpdateYup } from '../validation/restaurant.yup.js'
 const router = express.Router()
 
 // Register
 router.post('/', verifyTokenAndAdmin, async (req, res) => {
-    const {  name, address, phone, opening_hours } = req.body
-    try {
-// TODO on ne met pas en id pour
-//  register un restaurant on laisse mongoDB gerer les IDs
-
-    const newRestaurant = new Restaurant({
-        name,
-        address,
-        phone,
-        opening_hours,
-    })
-
+    const validatedData = await restaurantInputSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
+    const newRestaurant = new Restaurant(validatedData)
     const savedRestaurant = await newRestaurant.save()
     res.status(201).json(savedRestaurant)
-    } catch (err) {
-        res.status(500).json({ response: 'Internal server error: ' + err.message })
-    }
 })
+
 
 // creer get restaurant
 
@@ -38,13 +26,10 @@ router.get('/:id', verifyToken, async (req, res) => {
 
 router.put('/:id', verifyTokenAndAdmin, async (req, res) => {
     const restaurantId = req.params.id
-
-
-    const {  name, address, phone, opening_hours } = req.body
-
-    await Restaurant.updateOne({_id: restaurantId}, { name : name, address : address, phone : phone, opening_hours : opening_hours})
-    const restaurant = await Restaurant.findById(restaurantId)
-    res.status(200).json(restaurant)
+    const validatedData = await restaurantUpdateYup.validate(req.body, { abortEarly: false, stripUnknown: true });
+    await Restaurant.updateOne({_id: restaurantId}, validatedData)
+    const updatedRestaurant = await Restaurant.findById(restaurantId)
+    res.status(200).json(updatedRestaurant)
 })
 
 // creer supprimer restaurant

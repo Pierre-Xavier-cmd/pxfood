@@ -3,35 +3,22 @@
 import express from 'express'
 import User from '../models/Users.js'
 import jwt from 'jsonwebtoken'
-
+import { userInputSchema } from '../validation/user.yup.js'
 const router = express.Router()
 
 // Register
 router.post('/register', async (req, res) => {
-
-    const { username, email, password } = req.body
-    
-
-    try {
-        const newUser = new User({
-            username,
-            email,
-            password,
-            role: "user",
-        })
-
+        const validatedData = await userInputSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
+        const newUser = new User(validatedData)
         const savedUser = await newUser.save()
         res.status(201).json({...savedUser, accessToken: jwt.sign(
             {
                 id: savedUser._id,
-                role: "user",
+                role: validatedData.role,
             },
             process.env.JWT_SEC,
             { expiresIn: '3d' }
         )})
-    } catch (err) {
-        res.status(500).json({ response: 'Internal server error: ' + err.message })
-    }
 })
 
 // Login
