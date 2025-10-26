@@ -9,7 +9,6 @@ const router = express.Router()
 // Register
 router.post('/register', async (req, res) => {
         const validatedData = await userInputSchema.validate(req.body, { abortEarly: false, stripUnknown: true });
-        console.log(validatedData)
         const newUser = new User(validatedData)
         const savedUser = await newUser.save()
         res.status(201).json({...savedUser, accessToken: jwt.sign(

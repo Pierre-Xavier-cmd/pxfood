@@ -1,6 +1,7 @@
 import express from 'express'
 import User from '../models/Users.js'
 import { verifyTokenAndAdmin, verifyTokenAndAuthorization } from '../middlewares/verifyToken.js'
+import { userUpdateYup } from '../validation/user.yup.js'
 
 
 const router = express.Router()
@@ -16,6 +17,8 @@ router.get('/:id', verifyTokenAndAuthorization, async (req, res) => {
 // creer update user 
 
 router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
+    const validatedData = await userUpdateYup.validate(req.body, { abortEarly: false, stripUnknown: true });
+
     const userId = req.params.id
     const user = req.body
     await User.updateOne({_id: userId}, user)    
