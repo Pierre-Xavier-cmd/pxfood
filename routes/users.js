@@ -10,7 +10,6 @@ router.get('/:id', verifyTokenAndAuthorization, async (req, res) => {
     const userId = req.params.id
     const user = await User.findOne({ _id: userId})
     res.status(200).json(user)
-
 })
 
 // creer update user 
@@ -27,7 +26,7 @@ router.put('/:id', verifyTokenAndAuthorization, async (req, res) => {
 // creer supprimer user
 router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
     const userId = req.params.id
-    const user = await User.deleteOne({_id: userId})
+    await User.deleteOne({_id: userId})
     res.status(200).json({message: `Suppression finie pour user avec id ${userId}`})
 })
 

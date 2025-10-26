@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
         res.status(201).json({...savedUser, accessToken: jwt.sign(
             {
                 id: savedUser._id,
-                isAdmin: false,
+                role: "user",
             },
             process.env.JWT_SEC,
             { expiresIn: '3d' }
@@ -40,11 +40,9 @@ router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body
 
-        console.log(req.body)
 
         const user = await User.findOne({ username: username })
 
-        console.log(user)
 
         if (!user) {
             return res.status(401).json('Wrong User Name')
@@ -62,7 +60,7 @@ router.post('/login', async (req, res) => {
         const accessToken = jwt.sign(
             {
                 id: user._id,
-                isAdmin: user.isAdmin,
+                role: user.role,
             },
             process.env.JWT_SEC,
             { expiresIn: '3d' }
