@@ -2,6 +2,7 @@ import express from 'express'
 import User from '../models/Users.js'
 import { verifyTokenAndAdmin, verifyTokenAndAuthorization } from '../middlewares/verifyToken.js'
 
+
 const router = express.Router()
 // creer get user
 

@@ -3,22 +3,24 @@
 import express from 'express'
 import User from '../models/Users.js'
 import jwt from 'jsonwebtoken'
-
+import { userInputSchema } from '../validation/user.yup.js'
 const router = express.Router()
 
 // Register
 router.post('/register', async (req, res) => {
 
-    const { username, email, password } = req.body
-    
+    const { error } = userInputSchema.validate(req.body)
+    if (error) {
+        return res.status(400).json({ error: error.message })
+    }
 
     try {
         const newUser = new User({
-            username,
-            email,
-            password,
-            role: "user",
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password,
         })
+
 
         const savedUser = await newUser.save()
         res.status(201).json({...savedUser, accessToken: jwt.sign(
